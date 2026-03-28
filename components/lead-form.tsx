@@ -4,12 +4,14 @@ import { useState } from "react";
 
 type FormState = {
   name: string;
+  email: string;
   phone: string;
   message: string;
 };
 
 const initialState: FormState = {
   name: "",
+  email: "",
   phone: "",
   message: "",
 };
@@ -64,6 +66,16 @@ export function LeadForm() {
         required
         className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-4 py-3 text-sm text-zinc-100 outline-none ring-emerald-500 transition focus:ring-2"
       />
+      <div>
+        <input
+          type="email"
+          value={form.email}
+          onChange={(event) => setForm((prev) => ({ ...prev, email: event.target.value }))}
+          placeholder="Email"
+          required
+          className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-4 py-3 text-sm text-zinc-100 outline-none ring-emerald-500 transition focus:ring-2"
+        />
+      </div>
       <input
         type="tel"
         value={form.phone}

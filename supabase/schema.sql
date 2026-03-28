@@ -3,12 +3,23 @@ create extension if not exists "pgcrypto";
 create table if not exists public.leads (
   id uuid primary key default gen_random_uuid(),
   name text not null,
+  email text,
   phone text not null,
   message text not null,
   source text,
   status text not null default 'new',
+  conversion_value numeric not null default 0,
   created_at timestamptz not null default now()
 );
+
+alter table public.leads
+  add column if not exists status text not null default 'new';
+
+alter table public.leads
+  add column if not exists conversion_value numeric not null default 0;
+
+alter table public.leads
+  add column if not exists email text;
 
 create table if not exists public.conversations (
   id uuid primary key default gen_random_uuid(),

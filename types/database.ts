@@ -7,28 +7,34 @@ export type Database = {
         Row: {
           id: string;
           name: string;
+          email: string | null;
           phone: string;
           message: string;
           source: string | null;
           status: string;
+          conversion_value: number;
           created_at: string;
         };
         Insert: {
           id?: string;
           name: string;
+          email?: string | null;
           phone: string;
           message: string;
           source?: string | null;
           status?: string;
+          conversion_value?: number;
           created_at?: string;
         };
         Update: {
           id?: string;
           name?: string;
+          email?: string | null;
           phone?: string;
           message?: string;
           source?: string | null;
           status?: string;
+          conversion_value?: number;
           created_at?: string;
         };
         Relationships: [];

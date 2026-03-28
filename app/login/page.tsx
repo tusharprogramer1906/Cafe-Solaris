@@ -1,16 +1,28 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 
 export default function LoginPage() {
   const router = useRouter();
+  const supabase = useMemo(() => getSupabaseBrowserClient(), []);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [mode, setMode] = useState<"login" | "signup">("login");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    const checkSession = async () => {
+      const { data } = await supabase.auth.getSession();
+      if (data.session) {
+        router.push("/dashboard");
+      }
+    };
+
+    void checkSession();
+  }, [router, supabase]);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -18,22 +30,34 @@ export default function LoginPage() {
     setError("");
 
     try {
-      const supabase = getSupabaseBrowserClient();
       const action =
         mode === "login"
           ? supabase.auth.signInWithPassword({ email, password })
           : supabase.auth.signUp({ email, password });
 
-      const { error: authError } = await action;
+      const { data, error: authError } = await action;
+
       if (authError) {
-        throw authError;
+        console.error(authError);
+        alert(authError.message);
+        setError(authError.message);
+        return;
       }
 
-      router.push("/dashboard");
-      router.refresh();
+      if (data?.session) {
+        router.push("/dashboard");
+        router.refresh();
+        return;
+      }
+
+      if (mode === "signup") {
+        setError("Signup successful. Please check your email to confirm your account.");
+      }
     } catch (submitError) {
       console.error(submitError);
-      setError("Unable to authenticate with these credentials.");
+      const message = submitError instanceof Error ? submitError.message : "Unable to authenticate.";
+      alert(message);
+      setError(message);
     } finally {
       setLoading(false);
     }
